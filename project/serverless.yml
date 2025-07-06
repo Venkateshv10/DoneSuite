@@ -1,0 +1,180 @@
+service: donesuite-platform
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    NODE_ENV: ${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+          Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-assets/*"
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:service}-${self:provider.stage}-*"
+
+functions:
+  # API Gateway handler
+  api:
+    handler: lambda/api.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+    environment:
+      CORS_ORIGIN: "*"
+      JWT_SECRET: ${ssm:/donesuite/${self:provider.stage}/jwt-secret}
+      GOOGLE_CLIENT_ID: ${ssm:/donesuite/${self:provider.stage}/google-client-id}
+      GOOGLE_CLIENT_SECRET: ${ssm:/donesuite/${self:provider.stage}/google-client-secret}
+      GITHUB_CLIENT_ID: ${ssm:/donesuite/${self:provider.stage}/github-client-id}
+      GITHUB_CLIENT_SECRET: ${ssm:/donesuite/${self:provider.stage}/github-client-secret}
+      MICROSOFT_CLIENT_ID: ${ssm:/donesuite/${self:provider.stage}/microsoft-client-id}
+      MICROSOFT_CLIENT_SECRET: ${ssm:/donesuite/${self:provider.stage}/microsoft-client-secret}
+
+  # Static file serving
+  static:
+    handler: lambda/static.handler
+    events:
+      - http:
+          path: /
+          method: GET
+      - http:
+          path: /static/{proxy+}
+          method: GET
+    environment:
+      STATIC_BUCKET: ${self:service}-${self:provider.stage}-assets
+
+resources:
+  Resources:
+    # DynamoDB Tables
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-users
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    ParticipantsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-participants
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    ProjectsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-projects
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    TasksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-tasks
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    # S3 Bucket for static assets
+    AssetsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:provider.stage}-assets
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, POST, DELETE]
+              AllowedOrigins: ['*']
+              MaxAge: 3000
+
+    # S3 Bucket Policy
+    AssetsBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref AssetsBucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: !Sub '${AssetsBucket}/*'
+
+  Outputs:
+    ApiGatewayRestApiId:
+      Description: API Gateway REST API ID
+      Value: !Ref ApiGatewayRestApi
+      Export:
+        Name: ${self:service}-${self:provider.stage}-api-id
+
+    ApiGatewayRestApiRootResourceId:
+      Description: API Gateway REST API Root Resource ID
+      Value: !GetAtt ApiGatewayRestApi.RootResourceId
+      Export:
+        Name: ${self:service}-${self:provider.stage}-api-root-resource-id
+
+    ApiGatewayRestApiUrl:
+      Description: API Gateway REST API URL
+      Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${self:provider.stage}'
+      Export:
+        Name: ${self:service}-${self:provider.stage}-api-url
+
+    AssetsBucketName:
+      Description: S3 Bucket for static assets
+      Value: !Ref AssetsBucket
+      Export:
+        Name: ${self:service}-${self:provider.stage}-assets-bucket
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin 
