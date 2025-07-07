@@ -1,5 +1,9 @@
 # DoneSuite
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-online-brightgreen)](https://donesuite.onrender.com)
+
+🚀 **Live Demo:** [https://donesuite.onrender.com](https://donesuite.onrender.com)
+
 DoneSuite is a modern, interactive to-do list dashboard built with React, Vite, and Tailwind CSS. It features a beautiful UI, user authentication (including social logins), a profile section, and a stylish logout experience. Easily add, edit, complete, and delete your to-dos in a responsive, delightful interface.
 
 **Developed by VENKEY STACKS**
