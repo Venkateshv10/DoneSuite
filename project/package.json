@@ -1,5 +1,5 @@
 {
-  "name": "donesuite-platform",
+  "name": "donesuite",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -13,7 +13,8 @@
     "deploy:prod": "chmod +x deploy.sh && ./deploy.sh prod",
     "setup:aws": "npm run setup:params && npm run setup:oauth",
     "setup:params": "echo 'Setting up AWS Parameters...' && node scripts/setup-params.js",
-    "setup:oauth": "echo 'Please configure OAuth providers manually'"
+    "setup:oauth": "echo 'Please configure OAuth providers manually",
+    "start": "node server.js"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
@@ -54,7 +55,7 @@
     "lambda",
     "serverless"
   ],
-  "author": "VENKATESH STACKS",
+  "author": "VENKEY STACKS",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -63,5 +64,6 @@
   "bugs": {
     "url": "https://github.com/venkateshstacks/donesuite-platform/issues"
   },
-  "homepage": "https://github.com/venkateshstacks/donesuite-platform#readme"
+  "homepage": "https://github.com/venkateshstacks/donesuite-platform#readme",
+  "description": "DoneSuite - Modern task management dashboard by VENKEY STACKS"
 }
