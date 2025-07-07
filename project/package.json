@@ -14,7 +14,7 @@
     "setup:aws": "npm run setup:params && npm run setup:oauth",
     "setup:params": "echo 'Setting up AWS Parameters...' && node scripts/setup-params.js",
     "setup:oauth": "echo 'Please configure OAuth providers manually'",
-    "postinstall": "chmod +x node_modules/.bin/vite"
+    "postinstall": "if [ -f node_modules/.bin/vite ]; then chmod +x node_modules/.bin/vite; fi"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
