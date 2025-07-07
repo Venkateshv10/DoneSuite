@@ -11,4 +11,9 @@ export default defineConfig({
     host: true,
     port: process.env.PORT ? Number(process.env.PORT) : 4173,
   },
+  preview: {
+    host: true,
+    port: process.env.PORT ? Number(process.env.PORT) : 4173,
+    allowedHosts: ['donesuite.onrender.com'],
+  },
 });
