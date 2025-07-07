@@ -1,11 +1,27 @@
-# DoneSuite - Hackathon Management Platform
+# DoneSuite
 
-A modern, scalable hackathon management platform built with React and AWS Lambda. Features multiple authentication options, real-time data management, and a beautiful responsive UI.
+DoneSuite is a modern, interactive to-do list dashboard built with React, Vite, and Tailwind CSS. It features a beautiful UI, user authentication (including social logins), a profile section, and a stylish logout experience. Easily add, edit, complete, and delete your to-dos in a responsive, delightful interface.
 
-![DoneSuite Platform](https://img.shields.io/badge/DoneSuite-Platform-blue)
-![React](https://img.shields.io/badge/React-18.3.1-blue)
-![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-orange)
-![Serverless](https://img.shields.io/badge/Serverless-Framework-red)
+**Developed by VENKEY STACKS**
+
+## Features
+- Beautiful dashboard with gradient backgrounds and modern design
+- User authentication (email/password & social logins)
+- Profile dropdown with user info and logout
+- Add, edit, complete, and delete to-dos (CRUD)
+- Animated progress bar and celebratory messages
+- Responsive, mobile-friendly, and dark mode support
+
+## Getting Started
+1. Install dependencies: `npm install`
+2. Start the dev server: `npm run dev`
+3. Open [http://localhost:5173/](http://localhost:5173/) in your browser
+
+---
+
+**© 2024 VENKEY STACKS. All rights reserved.**
+
+Enjoy managing your tasks with DoneSuite!
 
 ## 🚀 Features
 
